@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fancy Text Generator / おしゃれ文字変換ツール</title>
+<meta name="description" content="普通の文字を太字・丸文字・全角・二重線文字などに変換。SNSプロフィールに。">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4214020669195548"
+     crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #120e18; --card: #1d1826; --text: #f5f1fa; --sub: #a595c2;
+    --accent: #e879f9; --accent2: #38d9c4; --border: #2e2640;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Hiragino Kaku Gothic ProN", "Segoe UI", Arial, sans-serif;
+    background: var(--bg); color: var(--text); padding: 16px;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  .top-row { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+  .lang-btn { background: none; border: 1px solid var(--border); color: var(--sub); border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  h1 { font-size: 21px; text-align: center; margin: 4px 0 4px; }
+  .lead { text-align: center; color: var(--sub); font-size: 13px; margin-bottom: 18px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  input[type="text"] {
+    width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border);
+    border-radius: 10px; background: #150f1e; color: var(--text);
+  }
+  .styles { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .style-row {
+    display: flex; align-items: center; gap: 10px; background: #150f1e;
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer;
+  }
+  .style-row .label { font-size: 11px; color: var(--sub); width: 70px; flex-shrink: 0; }
+  .style-row .value { font-size: 16px; word-break: break-all; flex: 1; }
+  .style-row .copied-tag { font-size: 11px; color: var(--accent); opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
+  .style-row.copied .copied-tag { opacity: 1; }
+  .footer-links { text-align: center; font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.8; }
+  .footer-links a { color: var(--accent2); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-row"><button class="lang-btn" id="langBtn">EN</button></div>
+  <h1 id="title">✨ おしゃれ文字変換ツール</h1>
+  <p class="lead" id="lead">普通の文字を太字・丸文字・全角などに変換。タップでコピー。</p>
+
+  <div class="card">
+    <input type="text" id="textInput" placeholder="" value="Hello World">
+    <div class="styles" id="styles"></div>
+  </div>
+
+  <p class="footer-links" id="footerLinks"></p>
+</div>
+
+<script>
+  const DS_UPPER_EXCEPTIONS = { C: 0x2102, H: 0x210D, N: 0x2115, P: 0x2119, Q: 0x211A, R: 0x211D, Z: 0x2124 };
+
+  function convertChar(ch, style) {
+    const code = ch.codePointAt(0);
+    if (code >= 65 && code <= 90) { // A-Z
+      const idx = code - 65;
+      const letter = ch;
+      switch (style) {
+        case 'bold': return String.fromCodePoint(0x1D400 + idx);
+        case 'fullwidth': return String.fromCodePoint(0xFF21 + idx);
+        case 'doublestruck': return DS_UPPER_EXCEPTIONS[letter] ? String.fromCodePoint(DS_UPPER_EXCEPTIONS[letter]) : String.fromCodePoint(0x1D538 + idx);
+        case 'circled': return String.fromCodePoint(0x24B6 + idx);
+      }
+    } else if (code >= 97 && code <= 122) { // a-z
+      const idx = code - 97;
+      switch (style) {
+        case 'bold': return String.fromCodePoint(0x1D41A + idx);
+        case 'fullwidth': return String.fromCodePoint(0xFF41 + idx);
+        case 'doublestruck': return String.fromCodePoint(0x1D552 + idx);
+        case 'circled': return String.fromCodePoint(0x24D0 + idx);
+      }
+    } else if (code >= 48 && code <= 57) { // 0-9
+      const idx = code - 48;
+      switch (style) {
+        case 'bold': return String.fromCodePoint(0x1D7CE + idx);
+        case 'fullwidth': return String.fromCodePoint(0xFF10 + idx);
+        case 'doublestruck': return String.fromCodePoint(0x1D7D8 + idx);
+        case 'circled': return idx === 0 ? String.fromCodePoint(0x24EA) : String.fromCodePoint(0x2460 + idx - 1);
+      }
+    } else if (ch === ' ') {
+      return style === 'fullwidth' ? String.fromCodePoint(0x3000) : ch;
+    }
+    return ch;
+  }
+
+  function convert(text, style) {
+    return [...text].map(ch => convertChar(ch, style)).join('');
+  }
+
+  const STYLE_KEYS = ['bold', 'fullwidth', 'doublestruck', 'circled'];
+
+  const I18N = {
+    ja: {
+      title: '✨ おしゃれ文字変換ツール',
+      lead: '普通の文字を太字・丸文字・全角などに変換。タップでコピー。',
+      placeholder: '文字を入力...',
+      styleLabels: { bold: '太字', fullwidth: '全角', doublestruck: '二重線', circled: '丸文字' },
+      copied: 'コピーしました',
+      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/text-tools/" target="_blank" rel="noopener">文字数カウント</a> / <a href="https://naginata-work.github.io/name-generator/" target="_blank" rel="noopener">名前生成</a>'
+    },
+    en: {
+      title: '✨ Fancy Text Generator',
+      lead: 'Turn plain text into bold, circled, fullwidth, and more. Tap to copy.',
+      placeholder: 'Type your text...',
+      styleLabels: { bold: 'Bold', fullwidth: 'Fullwidth', doublestruck: 'Double-struck', circled: 'Circled' },
+      copied: 'Copied',
+      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/text-tools/" target="_blank" rel="noopener">Text Counter</a> / <a href="https://naginata-work.github.io/name-generator/" target="_blank" rel="noopener">Name Generator</a>'
+    }
+  };
+
+  function loadLang() { try { return localStorage.getItem('fancyTextLang'); } catch (e) { return null; } }
+  function saveLang(l) { try { localStorage.setItem('fancyTextLang', l); } catch (e) {} }
+  let lang = loadLang() === 'en' ? 'en' : 'ja';
+  function t() { return I18N[lang]; }
+
+  function renderStyles() {
+    const text = document.getElementById('textInput').value;
+    const container = document.getElementById('styles');
+    container.innerHTML = '';
+    STYLE_KEYS.forEach(style => {
+      const converted = convert(text, style);
+      const row = document.createElement('div');
+      row.className = 'style-row';
+      row.innerHTML = `<div class="label">${t().styleLabels[style]}</div><div class="value">${converted || '-'}</div><div class="copied-tag">${t().copied}</div>`;
+      row.addEventListener('click', async () => {
+        if (!converted) return;
+        try {
+          await navigator.clipboard.writeText(converted);
+          row.classList.add('copied');
+          setTimeout(() => row.classList.remove('copied'), 1200);
+        } catch { alert(converted); }
+      });
+      container.appendChild(row);
+    });
+  }
+
+  document.getElementById('textInput').addEventListener('input', renderStyles);
+
+  function renderStaticText() {
+    document.getElementById('title').textContent = t().title;
+    document.getElementById('lead').textContent = t().lead;
+    document.getElementById('textInput').placeholder = t().placeholder;
+    document.getElementById('footerLinks').innerHTML = t().footerLinks;
+    renderStyles();
+  }
+
+  document.getElementById('langBtn').addEventListener('click', () => {
+    lang = lang === 'ja' ? 'en' : 'ja';
+    saveLang(lang);
+    document.getElementById('langBtn').textContent = lang === 'ja' ? 'EN' : 'JA';
+    renderStaticText();
+  });
+
+  document.getElementById('langBtn').textContent = lang === 'ja' ? 'EN' : 'JA';
+  renderStaticText();
+</script>
+</body>
+</html>
