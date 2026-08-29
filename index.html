@@ -52,7 +52,25 @@
     <div class="styles" id="styles"></div>
   </div>
 
+  <div class="card" style="font-size:13px; line-height:1.9; color:var(--sub);">
+    <h2 id="aboutTitle" style="font-size:15px; color:var(--text); margin:0 0 8px;"></h2>
+    <p id="aboutBody1" style="margin:0 0 10px;"></p>
+    <p id="aboutBody2" style="margin:0;"></p>
+  </div>
+
+  <div class="card" style="font-size:13px; line-height:1.9; color:var(--sub);">
+    <h2 id="faqTitle" style="font-size:15px; color:var(--text); margin:0 0 10px;"></h2>
+    <p id="faq1Q" style="margin:0 0 4px; color:var(--text); font-weight:bold;"></p>
+    <p id="faq1A" style="margin:0 0 12px;"></p>
+    <p id="faq2Q" style="margin:0 0 4px; color:var(--text); font-weight:bold;"></p>
+    <p id="faq2A" style="margin:0;"></p>
+  </div>
+
   <p class="footer-links" id="footerLinks"></p>
+  <p style="text-align:center; font-size:11px; color:var(--sub); margin-top:4px;">
+    <a href="https://naginata-work.github.io/" style="color:var(--sub);" id="allToolsLink"></a> ・
+    <a href="https://naginata-work.github.io/privacy.html" style="color:var(--sub);" id="privacyLink"></a>
+  </p>
 </div>
 
 <script>
@@ -104,7 +122,15 @@
       placeholder: '文字を入力...',
       styleLabels: { bold: '太字', fullwidth: '全角', doublestruck: '二重線', circled: '丸文字' },
       copied: 'コピーしました',
-      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/text-tools/" target="_blank" rel="noopener">文字数カウント</a> / <a href="https://naginata-work.github.io/name-generator/" target="_blank" rel="noopener">名前生成</a>'
+      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/text-tools/" target="_blank" rel="noopener">文字数カウント</a> / <a href="https://naginata-work.github.io/name-generator/" target="_blank" rel="noopener">名前生成</a>',
+      aboutTitle: '文字装飾の仕組みについて',
+      aboutBody1: 'SNSのプロフィールで見かける𝐁𝐨𝐥𝐝な文字やⒸⓘⓡⓒⓛⓔⓓな丸文字は、実は特殊なフォントを使っているわけではありません。Unicode(文字コードの世界共通規格)には、アルファベットの装飾版が独立した文字として登録されており、それをそのままコピー&ペーストしているだけです。',
+      aboutBody2: 'そのため、コピーした文字はどんなアプリに貼り付けても同じ見た目で表示されます(絵文字と同じ仕組みです)。ただし一部の古いシステムでは正しく表示されないことがあります。二重線文字(ℂ・ℍなど)の一部の文字は、Unicode上の欠番を避けるため、数学記号として昔から使われてきた文字を代わりに割り当てています。',
+      faqTitle: 'よくある質問',
+      faq1Q: '変換した文字は検索エンジンでも普通の文字として認識される?',
+      faq1A: 'されません。見た目は似ていても、内部的には全く別の文字コードとして扱われるため、検索や本文中では通常の半角英数字とは区別されます。SNSの目立たせたい部分に使うのが向いています。',
+      faq2Q: '日本語の文章にも装飾できる?',
+      faq2A: '現在の4種類(太字・全角・二重線・丸文字)は、いずれもアルファベット(A-Z, a-z)と数字(0-9)のみが対象です。日本語のひらがな・カタカナ・漢字はそのまま表示され、装飾されません。',
     },
     en: {
       title: '✨ Fancy Text Generator',
@@ -112,7 +138,15 @@
       placeholder: 'Type your text...',
       styleLabels: { bold: 'Bold', fullwidth: 'Fullwidth', doublestruck: 'Double-struck', circled: 'Circled' },
       copied: 'Copied',
-      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/text-tools/" target="_blank" rel="noopener">Text Counter</a> / <a href="https://naginata-work.github.io/name-generator/" target="_blank" rel="noopener">Name Generator</a>'
+      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/text-tools/" target="_blank" rel="noopener">Text Counter</a> / <a href="https://naginata-work.github.io/name-generator/" target="_blank" rel="noopener">Name Generator</a>',
+      aboutTitle: 'How the styled text actually works',
+      aboutBody1: "The 𝐁𝐨𝐥𝐝 letters or Ⓒⓘⓡⓒⓛⓔⓓ text you see in bios online aren't a special font — Unicode (the universal character standard) has decorative versions of the alphabet registered as their own distinct characters. Copying this text just copies those characters directly.",
+      aboutBody2: "That's why the copied text looks the same in any app you paste it into, the same way emoji do. A handful of double-struck letters (like ℂ and ℍ) use older math symbols instead of following the usual pattern, filling in gaps left in the Unicode block.",
+      faqTitle: 'FAQ',
+      faq1Q: 'Will search engines or spell-checkers treat the converted text as normal letters?',
+      faq1A: "No. Even though they look similar, they're entirely different character codes under the hood, so they're treated as distinct from regular ASCII letters in search and body text — best used for the parts of a bio you want to stand out.",
+      faq2Q: 'Does this work on Japanese text too?',
+      faq2A: "The four current styles (bold, fullwidth, double-struck, circled) only cover letters A-Z, a-z, and digits 0-9. Japanese hiragana, katakana, and kanji pass through unchanged.",
     }
   };
 
@@ -149,6 +183,18 @@
     document.getElementById('lead').textContent = t().lead;
     document.getElementById('textInput').placeholder = t().placeholder;
     document.getElementById('footerLinks').innerHTML = t().footerLinks;
+    document.getElementById('aboutTitle').textContent = t().aboutTitle;
+    document.getElementById('aboutBody1').textContent = t().aboutBody1;
+    document.getElementById('aboutBody2').textContent = t().aboutBody2;
+    document.getElementById('faqTitle').textContent = t().faqTitle;
+    document.getElementById('faq1Q').textContent = t().faq1Q;
+    document.getElementById('faq1A').textContent = t().faq1A;
+    document.getElementById('faq2Q').textContent = t().faq2Q;
+    document.getElementById('faq2A').textContent = t().faq2A;
+    document.getElementById('allToolsLink').textContent = lang === 'ja' ? '他のツール一覧' : 'All tools';
+    document.getElementById('allToolsLink').href = 'https://naginata-work.github.io/';
+    document.getElementById('privacyLink').textContent = lang === 'ja' ? 'プライバシーポリシー' : 'Privacy policy';
+    document.getElementById('privacyLink').href = 'https://naginata-work.github.io/privacy.html';
     renderStyles();
   }
 
